@@ -1,11 +1,1386 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Saad</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>websaad / portfolio — Muhammad Saad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* =============================================
+   DESIGN TOKENS — GitHub Dark Dimmed palette
+   ============================================= */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg0:       #0d1117;   /* page bg */
+  --bg1:       #161b22;   /* card / sidebar bg */
+  --bg2:       #1c2128;   /* overlay / hover bg */
+  --bg3:       #22272e;   /* inset / code bg */
+  --border0:   #30363d;   /* default border */
+  --border1:   #21262d;   /* subtle border */
+  --t1:        #cdd9e5;   /* primary text */
+  --t2:        #8b949e;   /* muted text */
+  --t3:        #545d68;   /* dimmed text */
+  --green:     #57ab5a;
+  --green-bg:  rgba(87,171,90,.15);
+  --green-glow:rgba(87,171,90,.08);
+  --blue:      #539bf5;
+  --blue-bg:   rgba(83,155,245,.12);
+  --orange:    #e0823d;
+  --red:       #e5534b;
+  --purple:    #b083f0;
+  --yellow:    #daaa3f;
+  --cyan:      #39c5cf;
+  --F1:        'Geist', sans-serif;
+  --FM:        'JetBrains Mono', monospace;
+}
+html{scroll-behavior:smooth;background:var(--bg0)}
+body{
+  background:var(--bg0);
+  color:var(--t1);
+  font-family:var(--F1);
+  font-size:14px;
+  line-height:1.5;
+  overflow-x:hidden;
+  cursor:default;
+}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline;color:#74aaff}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg0)}
+::-webkit-scrollbar-thumb{background:var(--border0);border-radius:6px}
+
+/* =============================================
+   CUSTOM CURSOR
+   ============================================= */
+body{cursor:none}
+#cursor-dot{position:fixed;width:6px;height:6px;background:var(--green);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;mix-blend-mode:screen}
+#cursor-ring{position:fixed;width:28px;height:28px;border:1.5px solid rgba(87,171,90,.5);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;mix-blend-mode:screen}
+body.cursor-hover #cursor-ring{width:42px;height:42px;border-color:rgba(87,171,90,.9)}
+
+/* =============================================
+   SCANLINE OVERLAY
+   ============================================= */
+.scanlines{
+  position:fixed;inset:0;z-index:8000;pointer-events:none;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent 0px,transparent 2px,
+    rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px
+  );
+}
+
+/* =============================================
+   TOP NAV — perfect GitHub replica
+   ============================================= */
+.gh-nav{
+  position:sticky;top:0;z-index:500;
+  height:64px;
+  background:rgba(13,17,23,.88);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border0);
+  display:flex;align-items:center;
+  padding:0 24px;gap:16px;
+}
+.nav-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-octocat{width:32px;height:32px;fill:var(--t1);transition:fill .2s;cursor:pointer}
+.nav-octocat:hover{fill:var(--green)}
+.nav-search{
+  flex:1;max-width:320px;
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);
+  border:1px solid var(--border0);
+  border-radius:8px;
+  padding:7px 14px;
+  font-family:var(--FM);font-size:12px;color:var(--t2);
+  transition:border-color .2s,box-shadow .2s;cursor:text;
+}
+.nav-search:hover{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+.nav-search svg{width:14px;height:14px;fill:var(--t3);flex-shrink:0}
+.nav-search span{flex:1}
+.nav-kbd{background:var(--bg2);border:1px solid var(--border0);border-radius:5px;padding:1px 6px;font-size:11px;font-family:var(--FM);color:var(--t3)}
+.nav-links{display:flex;gap:4px;margin-left:auto;align-items:center}
+.nav-link{
+  padding:6px 14px;border-radius:6px;
+  font-size:14px;font-weight:500;color:var(--t1);
+  transition:background .15s;cursor:pointer;white-space:nowrap;
+}
+.nav-link:hover{background:var(--bg2);text-decoration:none}
+.nav-link.active{color:var(--t1);background:var(--bg2)}
+.nav-avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;cursor:pointer;
+  background:linear-gradient(135deg,#57ab5a,#3b9142);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--FM);font-size:11px;font-weight:700;color:#fff;
+  border:2px solid var(--border0);
+  transition:border-color .2s;
+}
+.nav-avatar:hover{border-color:var(--green)}
+.nav-notif{position:relative;padding:6px;cursor:pointer;border-radius:6px;transition:background .15s}
+.nav-notif:hover{background:var(--bg2)}
+.nav-notif svg{width:18px;height:18px;fill:var(--t1);display:block}
+.nav-badge{position:absolute;top:2px;right:2px;width:8px;height:8px;border-radius:50%;background:var(--orange);border:2px solid var(--bg0)}
+
+/* =============================================
+   REPO HEADER BREADCRUMB
+   ============================================= */
+.repo-header{
+  padding:18px 24px;
+  border-bottom:1px solid var(--border1);
+  display:flex;align-items:center;gap:12px;
+  flex-wrap:wrap;
+}
+.breadcrumb{
+  display:flex;align-items:center;gap:6px;
+  font-size:20px;font-family:var(--F1);flex-wrap:wrap;
+}
+.breadcrumb-user{color:var(--blue);font-weight:400}
+.breadcrumb-sep{color:var(--t3);font-weight:300;margin:0 2px}
+.breadcrumb-repo{color:var(--blue);font-weight:700}
+.repo-badge{
+  font-size:11px;font-weight:500;
+  padding:1px 9px;border-radius:20px;
+  border:1px solid var(--border0);color:var(--t2);
+  font-family:var(--FM);
+}
+.header-actions{margin-left:auto;display:flex;gap:8px}
+.gh-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:7px;
+  font-size:13px;font-weight:500;font-family:var(--F1);
+  border:1px solid var(--border0);
+  color:var(--t1);background:var(--bg2);
+  transition:background .15s,border-color .15s,box-shadow .15s;cursor:pointer;
+}
+.gh-btn:hover{background:#2d333b;border-color:#6e7681;text-decoration:none}
+.gh-btn.primary{background:var(--green-bg);border-color:rgba(87,171,90,.4);color:var(--green)}
+.gh-btn.primary:hover{background:rgba(87,171,90,.25)}
+.gh-btn svg{width:14px;height:14px;fill:currentColor}
+.btn-count{background:rgba(255,255,255,.08);padding:0 6px;border-radius:12px;font-size:11px;font-family:var(--FM)}
+
+/* =============================================
+   REPO TABS
+   ============================================= */
+.repo-tabs{
+  display:flex;align-items:center;
+  padding:0 24px;
+  border-bottom:1px solid var(--border0);
+  overflow-x:auto;background:var(--bg0);
+}
+.repo-tab{
+  display:flex;align-items:center;gap:7px;
+  padding:12px 14px;
+  font-size:14px;font-weight:400;color:var(--t2);
+  border-bottom:2px solid transparent;
+  white-space:nowrap;cursor:pointer;
+  transition:color .15s;
+}
+.repo-tab:hover{color:var(--t1);text-decoration:none}
+.repo-tab.on{color:var(--t1);font-weight:600;border-bottom-color:var(--orange)}
+.repo-tab svg{width:16px;height:16px;fill:currentColor;opacity:.8}
+.tab-pill{background:rgba(255,255,255,.07);padding:1px 7px;border-radius:12px;font-size:11px;font-family:var(--FM);font-weight:600}
+
+/* =============================================
+   MAIN 2-COLUMN LAYOUT
+   ============================================= */
+.repo-body{
+  max-width:1280px;margin:0 auto;
+  padding:24px 24px 80px;
+  display:grid;
+  grid-template-columns:1fr 296px;
+  gap:24px;
+  align-items:start;
+}
+@media(max-width:1024px){
+  .repo-body{grid-template-columns:1fr;padding:16px 16px 60px}
+  .repo-sidebar{order:-1}
+}
+
+/* =============================================
+   BRANCH / COMMIT BAR
+   ============================================= */
+.commit-strip{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 16px;
+  background:var(--bg1);
+  border:1px solid var(--border0);
+  border-radius:8px 8px 0 0;
+  border-bottom:none;
+  font-family:var(--FM);font-size:12px;
+}
+.branch-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:6px;
+  background:var(--bg2);border:1px solid var(--border0);
+  font-family:var(--FM);font-size:12px;color:var(--t1);
+  cursor:pointer;transition:background .15s;
+}
+.branch-btn:hover{background:var(--bg3)}
+.branch-btn svg{width:12px;height:12px;fill:var(--t2)}
+.commit-info{flex:1;overflow:hidden;display:flex;align-items:center;gap:8px}
+.c-avatar{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#57ab5a,#2a7d2e);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#fff}
+.c-msg{color:var(--t1);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-msg em{color:var(--t2);font-style:normal}
+.c-hash{color:var(--blue);font-size:11px;flex-shrink:0}
+.c-time{color:var(--t3);font-size:11px;flex-shrink:0;margin-left:auto}
+.commits-total{display:flex;align-items:center;gap:5px;color:var(--t2);flex-shrink:0;padding-left:10px;border-left:1px solid var(--border1)}
+.commits-total svg{width:14px;height:14px;fill:currentColor}
+
+/* =============================================
+   FILE TREE
+   ============================================= */
+.file-tree{
+  border:1px solid var(--border0);
+  border-top:none;
+  border-radius:0 0 8px 8px;
+  overflow:hidden;
+  margin-bottom:20px;
+}
+.file-row{
+  display:grid;
+  grid-template-columns:16px 1fr minmax(160px,40%) 80px;
+  align-items:center;gap:10px;
+  padding:7px 16px;
+  border-bottom:1px solid var(--border1);
+  transition:background .1s;cursor:pointer;
+}
+.file-row:last-child{border-bottom:none}
+.file-row:hover{background:rgba(255,255,255,.025)}
+.file-icon{width:16px;height:16px;fill:var(--t3);flex-shrink:0}
+.fi-dir{fill:var(--blue)}
+.fi-ts {fill:#3b82f6}
+.fi-js {fill:var(--yellow)}
+.fi-php{fill:var(--purple)}
+.fi-md {fill:var(--t2)}
+.fi-env{fill:var(--orange)}
+.fi-json{fill:var(--yellow)}
+.fi-sh  {fill:var(--green)}
+.file-name{font-family:var(--FM);font-size:13px;color:var(--blue);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-commit-msg{font-family:var(--FM);font-size:12px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-age{font-family:var(--FM);font-size:12px;color:var(--t3);text-align:right;white-space:nowrap}
+
+/* =============================================
+   README BOX
+   ============================================= */
+.readme-box{
+  border:1px solid var(--border0);border-radius:8px;overflow:hidden;
+}
+.readme-head{
+  background:var(--bg1);border-bottom:1px solid var(--border0);
+  padding:10px 16px;display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;
+}
+.readme-head svg{width:16px;height:16px;fill:var(--t2)}
+.readme-content{padding:32px 40px;background:var(--bg0);overflow:hidden}
+@media(max-width:600px){.readme-content{padding:20px 16px}}
+
+/* README typography */
+.readme-content h1{font-size:2em;font-weight:800;padding-bottom:.3em;border-bottom:1px solid var(--border0);margin-bottom:20px;line-height:1.2;letter-spacing:-.03em}
+.readme-content h2{font-size:1.4em;font-weight:700;padding-bottom:.2em;border-bottom:1px solid var(--border1);margin:32px 0 16px;letter-spacing:-.02em}
+.readme-content h3{font-size:1.1em;font-weight:600;margin:24px 0 12px}
+.readme-content p{color:var(--t2);margin-bottom:14px;line-height:1.75}
+.readme-content strong{color:var(--t1);font-weight:600}
+.readme-content a{color:var(--blue)}
+.readme-content hr{border:none;border-top:1px solid var(--border0);margin:28px 0}
+.readme-content ul{padding-left:1.5em;color:var(--t2);margin-bottom:14px}
+.readme-content li{margin-bottom:5px;line-height:1.7}
+.readme-content code{
+  font-family:var(--FM);font-size:.875em;
+  background:rgba(99,110,123,.2);
+  padding:.15em .4em;border-radius:6px;color:var(--t1);
+}
+.readme-content pre{
+  background:var(--bg3);border:1px solid var(--border0);
+  border-radius:8px;padding:18px 20px;
+  margin-bottom:16px;overflow-x:auto;position:relative;
+}
+.readme-content pre code{background:none;padding:0;font-size:13px;line-height:1.8}
+.readme-content blockquote{
+  border-left:4px solid var(--green);padding:8px 16px;
+  background:var(--green-glow);border-radius:0 6px 6px 0;
+  color:var(--t2);margin-bottom:14px;
+}
+
+/* =============================================
+   BADGE ROW
+   ============================================= */
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 24px}
+.badge{
+  display:inline-flex;align-items:center;
+  font-family:var(--FM);font-size:11px;font-weight:600;
+  border-radius:5px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.06);
+  transition:transform .15s,box-shadow .15s;
+}
+.badge:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.bl{background:#555;padding:4px 8px;color:#e0e0e0;white-space:nowrap}
+.bv{padding:4px 8px;color:#fff;white-space:nowrap}
+.bv-green {background:#2a7d2e}
+.bv-blue  {background:#0969da}
+.bv-orange{background:#9a4700}
+.bv-purple{background:#7239b3}
+.bv-cyan  {background:#0a7f81}
+.bv-yellow{background:#7d6514;color:#e0e0e0}
+
+/* =============================================
+   TECH STACK GRID
+   ============================================= */
+.stack-wrap{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.stack-chip{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 13px;border-radius:7px;font-size:12px;font-weight:500;
+  border:1px solid;font-family:var(--FM);
+  transition:transform .2s,box-shadow .2s;cursor:default;
+}
+.stack-chip:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.4)}
+.sc-react  {color:#61dafb;border-color:rgba(97,218,251,.25);background:rgba(97,218,251,.07)}
+.sc-node   {color:#68a063;border-color:rgba(104,160,99,.25);background:rgba(104,160,99,.07)}
+.sc-laravel{color:#ff4638;border-color:rgba(255,70,56,.25);background:rgba(255,70,56,.07)}
+.sc-vue    {color:#42b883;border-color:rgba(66,184,131,.25);background:rgba(66,184,131,.07)}
+.sc-ts     {color:#3b82f6;border-color:rgba(59,130,246,.25);background:rgba(59,130,246,.07)}
+.sc-docker {color:#2496ed;border-color:rgba(36,150,237,.25);background:rgba(36,150,237,.07)}
+.sc-pg     {color:#336791;border-color:rgba(51,103,145,.3);background:rgba(51,103,145,.08)}
+.sc-sock   {color:#25c2a0;border-color:rgba(37,194,160,.25);background:rgba(37,194,160,.07)}
+.sc-prisma {color:#5a67d8;border-color:rgba(90,103,216,.25);background:rgba(90,103,216,.07)}
+.sc-redis  {color:#d82c20;border-color:rgba(216,44,32,.25);background:rgba(216,44,32,.07)}
+.sc-php    {color:#b083f0;border-color:rgba(176,131,240,.25);background:rgba(176,131,240,.07)}
+.sc-tailw  {color:#06b6d4;border-color:rgba(6,182,212,.25);background:rgba(6,182,212,.07)}
+
+/* =============================================
+   TERMINAL
+   ============================================= */
+.terminal{
+  border:1px solid var(--border0);border-radius:10px;overflow:hidden;
+  margin:20px 0;box-shadow:0 8px 32px rgba(0,0,0,.5);
+}
+.term-bar{
+  background:#1c1c1e;
+  padding:10px 16px;border-bottom:1px solid #333;
+  display:flex;align-items:center;gap:8px;
+}
+.term-dots{display:flex;gap:6px}
+.tdot{width:12px;height:12px;border-radius:50%}
+.tdot-r{background:#ff5f57}.tdot-y{background:#febc2e}.tdot-g{background:#28c840}
+.term-title{flex:1;text-align:center;font-family:var(--FM);font-size:11px;color:#555}
+.term-body{
+  background:#0a0a0b;
+  padding:20px 24px;
+  font-family:var(--FM);font-size:13px;line-height:1.9;
+  overflow-x:auto;
+}
+.tl{display:flex;align-items:baseline;gap:0;flex-wrap:nowrap}
+.tp{color:#57ab5a;user-select:none;flex-shrink:0}
+.tpath{color:#539bf5;flex-shrink:0}
+.tgit{color:#b083f0;flex-shrink:0}
+.tcmd{color:var(--t1)}
+.tout{color:var(--t2);padding-left:0}
+.tok{color:#57ab5a}
+.terr{color:var(--red)}
+.tinfo{color:#539bf5}
+.thash{color:var(--yellow)}
+.tcursor{
+  display:inline-block;width:7px;height:14px;
+  background:var(--green);vertical-align:middle;
+  animation:blink .85s step-end infinite;margin-left:2px;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* =============================================
+   DIFF VIEW (Experience)
+   ============================================= */
+.diff-wrap{margin:20px 0}
+.diff-file{
+  border:1px solid var(--border0);border-radius:8px;overflow:hidden;
+  margin-bottom:14px;
+  transition:box-shadow .2s;
+}
+.diff-file:hover{box-shadow:0 0 0 2px rgba(83,155,245,.3)}
+.diff-head{
+  background:var(--bg1);border-bottom:1px solid var(--border0);
+  padding:9px 16px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  font-family:var(--FM);font-size:12px;
+}
+.diff-fname{color:var(--t1);font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.diff-lbl{
+  padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;flex-shrink:0;
+}
+.lbl-new{background:var(--green-bg);color:var(--green);border:1px solid rgba(87,171,90,.3)}
+.lbl-mod{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(83,155,245,.3)}
+.diff-stat{margin-left:auto;font-size:11px;flex-shrink:0}
+.da{color:var(--green)}.dr{color:var(--red)}
+.diff-body{font-family:var(--FM);font-size:12px;overflow-x:auto}
+.dl{display:grid;grid-template-columns:32px 14px 1fr;align-items:start;padding:1px 16px;min-height:24px}
+.dl:hover{background:rgba(255,255,255,.02)}
+.dl-n{color:var(--t3);font-size:10px;text-align:right;padding-top:4px;user-select:none;padding-right:8px}
+.dl-s{font-weight:700;font-size:13px;padding-top:2px}
+.dl-c{color:var(--t1);white-space:pre-wrap;word-break:break-word;padding:2px 0 2px 8px;line-height:1.75}
+.dl.plus{background:rgba(87,171,90,.06)}
+.dl.plus .dl-s{color:var(--green)}
+.dl.minus{background:rgba(229,83,75,.07)}
+.dl.minus .dl-s{color:var(--red)}
+.dl.hunk{background:rgba(83,155,245,.07);color:var(--blue)}
+.dl.hunk .dl-c{color:var(--blue);font-style:italic}
+/* syntax tokens */
+.k-kw   {color:#ff7b72}  /* keywords */
+.k-fn   {color:#d2a8ff}  /* functions */
+.k-str  {color:#a5d6ff}  /* strings */
+.k-num  {color:#79c0ff}  /* numbers */
+.k-cmt  {color:#6e7681;font-style:italic} /* comments */
+.k-type {color:#ffa657}  /* types */
+.k-prop {color:#e3b341}  /* property names */
+.k-op   {color:#ff7b72}  /* operators */
+
+/* =============================================
+   CONTRIBUTION HEATMAP
+   ============================================= */
+.heatmap-box{margin:20px 0}
+.heatmap-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:10px;flex-wrap:wrap;gap:8px;
+}
+.heatmap-title{font-size:14px;font-weight:600}
+.heatmap-sub{font-size:12px;color:var(--t2)}
+.heatmap-scroll{overflow-x:auto;padding-bottom:4px}
+.heatmap-grid{display:inline-flex;flex-direction:column;gap:2px}
+.heatmap-months{display:flex;gap:0;font-family:var(--FM);font-size:10px;color:var(--t3);margin-bottom:4px}
+.heatmap-month-label{flex:1;text-align:left}
+.heatmap-days{display:flex;gap:3px}
+.heatmap-week{display:flex;flex-direction:column;gap:3px}
+.hm-cell{
+  width:11px;height:11px;border-radius:2px;
+  transition:transform .12s,box-shadow .12s;cursor:pointer;
+}
+.hm-cell:hover{transform:scale(1.5);z-index:10;box-shadow:0 0 8px rgba(87,171,90,.6)}
+.h0{background:#161b22;border:1px solid rgba(255,255,255,.03)}
+.h1{background:#0e4429}
+.h2{background:#006d32}
+.h3{background:#26a641}
+.h4{background:#39d353}
+.heatmap-legend{display:flex;align-items:center;gap:4px;margin-top:8px;justify-content:flex-end;font-family:var(--FM);font-size:10px;color:var(--t3)}
+.hm-cell.sm{width:10px;height:10px}
+
+/* =============================================
+   PINNED / PROJECT CARDS
+   ============================================= */
+.project-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;
+}
+@media(max-width:700px){.project-grid{grid-template-columns:1fr}}
+.proj-card{
+  border:1px solid var(--border0);border-radius:8px;
+  padding:16px;background:var(--bg1);
+  display:flex;flex-direction:column;gap:10px;
+  transition:border-color .2s,box-shadow .2s,transform .2s;cursor:pointer;
+}
+.proj-card:hover{
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px var(--blue-bg),0 8px 24px rgba(0,0,0,.4);
+  transform:translateY(-2px);
+}
+.pcard-top{display:flex;align-items:center;gap:8px}
+.pcard-icon svg{width:16px;height:16px;fill:var(--t2)}
+.pcard-name{font-size:14px;font-weight:700;color:var(--blue)}
+.pcard-vis{font-size:10px;font-family:var(--FM);border:1px solid var(--border0);border-radius:12px;padding:1px 7px;color:var(--t3)}
+.pcard-desc{font-size:13px;color:var(--t2);line-height:1.55;flex:1}
+.pcard-bottom{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pcard-lang{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2)}
+.lang-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.pcard-stars{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--t2)}
+.pcard-stars svg{width:13px;height:13px;fill:currentColor}
+.pcard-date{font-size:12px;color:var(--t3);margin-left:auto;white-space:nowrap}
+
+/* =============================================
+   SKILL CODE CARDS
+   ============================================= */
+.skill-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;
+}
+@media(max-width:650px){.skill-grid{grid-template-columns:1fr}}
+.skill-card{
+  border:1px solid var(--border0);border-radius:8px;overflow:hidden;
+  transition:border-color .2s,transform .2s;
+}
+.skill-card:hover{border-color:var(--blue);transform:translateY(-2px)}
+.sc-header{
+  background:var(--bg2);border-bottom:1px solid var(--border0);
+  padding:8px 14px;display:flex;align-items:center;gap:8px;
+}
+.sc-macs{display:flex;gap:5px}
+.sc-mac{width:10px;height:10px;border-radius:50%}
+.sc-filename{flex:1;font-family:var(--FM);font-size:11px;color:var(--t3)}
+.sc-body{
+  padding:14px 16px;background:var(--bg3);
+  font-family:var(--FM);font-size:12px;line-height:1.8;
+}
+.sc-bars{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.sc-bar-row{display:flex;align-items:center;gap:8px}
+.sc-label{width:84px;font-size:11px;color:var(--t3);text-align:right;flex-shrink:0}
+.sc-track{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px;width:0;transition:width 1.5s cubic-bezier(.16,1,.3,1)}
+.sc-pct{width:30px;font-size:10px;color:var(--t3);text-align:right;font-family:var(--FM)}
+
+/* =============================================
+   SIDEBAR
+   ============================================= */
+.sidebar-card{
+  border:1px solid var(--border0);border-radius:8px;
+  padding:16px;background:var(--bg1);margin-bottom:16px;
+}
+.sidebar-title{font-size:13px;font-weight:700;margin-bottom:12px;color:var(--t1)}
+.about-desc{font-size:13px;color:var(--t2);line-height:1.65;margin-bottom:14px}
+.meta-rows{display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
+.meta-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t2)}
+.meta-row svg{width:15px;height:15px;fill:var(--t3);flex-shrink:0}
+.meta-row a{color:var(--blue)}
+.topics{display:flex;flex-wrap:wrap;gap:6px}
+.topic{
+  padding:3px 11px;border-radius:20px;font-size:12px;font-weight:600;
+  background:var(--blue-bg);color:var(--blue);
+  font-family:var(--FM);transition:background .15s;cursor:pointer;
+}
+.topic:hover{background:rgba(83,155,245,.25)}
+.stat-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border1);border-radius:6px;overflow:hidden;
+  margin-bottom:14px;
+}
+.stat-item{
+  background:var(--bg3);padding:14px 16px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.stat-num{font-family:var(--FM);font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.03em}
+.stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);font-family:var(--FM)}
+.lang-bar{height:7px;border-radius:7px;overflow:hidden;display:flex;gap:0;margin-bottom:12px}
+.lang-seg{height:100%;transition:flex .8s ease}
+.lang-list{display:flex;flex-direction:column;gap:8px}
+.lang-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2)}
+.ld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.lang-name{flex:1}
+.lang-pct{font-family:var(--FM);color:var(--t3)}
+.activity-list{display:flex;flex-direction:column;gap:0}
+.act-item{
+  display:flex;gap:9px;padding:9px 0;
+  border-bottom:1px solid var(--border1);font-size:12px;
+}
+.act-item:last-child{border:none}
+.act-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.act-body{flex:1;line-height:1.6;color:var(--t2)}
+.act-body strong{color:var(--t1);font-weight:600}
+.act-time{font-family:var(--FM);font-size:10px;color:var(--t3);white-space:nowrap;padding-top:3px}
+.edu-item{
+  border:1px solid var(--border1);border-radius:7px;
+  padding:12px 14px;background:var(--bg3);margin-bottom:8px;
+}
+.edu-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.edu-org{font-size:12px;color:var(--t2);margin-bottom:6px}
+.edu-foot{display:flex;justify-content:space-between;align-items:center}
+.edu-year{font-family:var(--FM);font-size:11px;color:var(--t3)}
+.edu-badge{font-family:var(--FM);font-size:11px;background:var(--green-bg);color:var(--green);padding:1px 7px;border-radius:4px}
+
+/* =============================================
+   SCROLL REVEAL ANIMATION
+   ============================================= */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* entrance animations */
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateY(20px)}
+  to  {opacity:1;transform:none}
+}
+.a1{animation:fadeSlideUp .55s ease both;animation-delay:.05s}
+.a2{animation:fadeSlideUp .55s ease both;animation-delay:.12s}
+.a3{animation:fadeSlideUp .55s ease both;animation-delay:.20s}
+.a4{animation:fadeSlideUp .55s ease both;animation-delay:.28s}
+.a5{animation:fadeSlideUp .55s ease both;animation-delay:.36s}
+
+/* =============================================
+   CONTACT SECTION
+   ============================================= */
+.contact-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;
+}
+@media(max-width:650px){.contact-grid{grid-template-columns:1fr}}
+.contact-card{
+  border:1px solid var(--border0);border-radius:8px;padding:18px;
+  background:var(--bg1);display:flex;flex-direction:column;gap:6px;
+  transition:border-color .2s,transform .2s;cursor:pointer;
+}
+.contact-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.contact-type{font-family:var(--FM);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:4px}
+.contact-val{font-size:14px;font-weight:600;color:var(--blue)}
+.contact-sub{font-size:12px;color:var(--t3)}
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.gh-footer{
+  border-top:1px solid var(--border0);margin-top:40px;
+  padding:20px 24px;
+  display:flex;justify-content:space-between;align-items:center;
+  flex-wrap:wrap;gap:12px;
+  font-size:12px;color:var(--t3);
+  font-family:var(--FM);
+}
+.footer-links{display:flex;gap:16px;flex-wrap:wrap}
+.footer-links a{color:var(--t3);transition:color .15s}
+.footer-links a:hover{color:var(--blue);text-decoration:none}
+
+/* =============================================
+   GLOWING STATUS DOT
+   ============================================= */
+.status-dot{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 0 2px rgba(87,171,90,.3);
+  animation:pulse-glow 2.4s ease-in-out infinite;
+}
+@keyframes pulse-glow{
+  0%,100%{box-shadow:0 0 0 2px rgba(87,171,90,.3)}
+  50%{box-shadow:0 0 0 5px rgba(87,171,90,.0),0 0 12px rgba(87,171,90,.5)}
+}
+</style>
 </head>
 <body>
 
-<h1>Saad</h1>
+<!-- Cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div class="scanlines" aria-hidden="true"></div>
 
+<!-- ════════════════════════════════════════════
+     NAV
+════════════════════════════════════════════ -->
+<nav class="gh-nav">
+  <div class="nav-logo">
+    <svg class="nav-octocat" viewBox="0 0 16 16" aria-label="GitHub">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+  </div>
+
+  <div class="nav-search">
+    <svg viewBox="0 0 16 16"><path d="M10.68 11.74a6 6 0 0 1-7.922-8.982 6 6 0 0 1 8.982 7.922l3.04 3.04a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215ZM11.5 7a4.499 4.499 0 1 0-8.997 0A4.499 4.499 0 0 0 11.5 7Z"/></svg>
+    <span>Search or jump to...</span>
+    <kbd class="nav-kbd">/</kbd>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link" href="#readme">Code</a>
+    <a class="nav-link" href="#work">Experience</a>
+    <a class="nav-link" href="#projects">Projects</a>
+    <a class="nav-link" href="#contact">Contact</a>
+    <div class="nav-notif">
+      <svg viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 1.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 0 0 8 16ZM3 5a5 5 0 0 1 10 0v2.947c0 .05.015.098.042.139l1.703 2.555A1.519 1.519 0 0 1 13.482 13H2.518a1.516 1.516 0 0 1-1.263-2.36l1.703-2.554A.255.255 0 0 0 3 7.947Z"/></svg>
+      <div class="nav-badge"></div>
+    </div>
+    <div class="nav-avatar" title="Muhammad Saad">MS</div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════
+     REPO HEADER
+════════════════════════════════════════════ -->
+<div class="repo-header a1">
+  <div class="breadcrumb">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--t2)" style="flex-shrink:0"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/></svg>
+    <span class="breadcrumb-user">websaad</span>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-repo">portfolio</span>
+    <span class="repo-badge">Public</span>
+    <span class="status-dot" style="margin-left:8px" title="Open to work"></span>
+  </div>
+  <div class="header-actions">
+    <button class="gh-btn">
+      <svg viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>
+      Star <span class="btn-count">47</span>
+    </button>
+    <button class="gh-btn">
+      <svg viewBox="0 0 16 16"><path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"/></svg>
+      Fork <span class="btn-count">12</span>
+    </button>
+    <button class="gh-btn primary">
+      <svg viewBox="0 0 16 16"><path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"/></svg>
+      Hire me
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
+     REPO TABS
+════════════════════════════════════════════ -->
+<div class="repo-tabs a2">
+  <a class="repo-tab on" href="#readme">
+    <svg viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+    Code <span class="tab-pill">48</span>
+  </a>
+  <a class="repo-tab" href="#work">
+    <svg viewBox="0 0 16 16"><path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Z"/></svg>
+    Issues <span class="tab-pill">3</span>
+  </a>
+  <a class="repo-tab" href="#projects">
+    <svg viewBox="0 0 16 16"><path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354Z"/></svg>
+    Pull requests <span class="tab-pill">1</span>
+  </a>
+  <a class="repo-tab" href="#contact">
+    <svg viewBox="0 0 16 16"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2Z"/></svg>
+    Contact
+  </a>
+  <a class="repo-tab" href="#heatmap">
+    <svg viewBox="0 0 16 16"><path d="M1.5 1.75V13.5h13.75a.75.75 0 0 1 0 1.5H.75a.75.75 0 0 1-.75-.75V1.75a.75.75 0 0 1 1.5 0Zm14.28 2.53-5.25 5.25a.75.75 0 0 1-1.06 0L7 7.06 4.28 9.78a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042l3.25-3.25a.75.75 0 0 1 1.06 0L9 7.94l4.72-4.72a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042Z"/></svg>
+    Insights
+  </a>
+</div>
+
+<!-- ════════════════════════════════════════════
+     BODY
+════════════════════════════════════════════ -->
+<div class="repo-body">
+
+  <!-- ── MAIN COLUMN ── -->
+  <main>
+
+    <!-- Branch / commit bar -->
+    <div class="commit-strip a3">
+      <button class="branch-btn">
+        <svg viewBox="0 0 16 16"><path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Z"/></svg>
+        main
+        <svg viewBox="0 0 16 16" width="12" height="12"><path d="M4.427 7.427l3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427Z"/></svg>
+      </button>
+      <div class="commit-info">
+        <div class="c-avatar">MS</div>
+        <span class="c-msg"><strong>websaad</strong> <em>feat: real-time WebSocket trading engine — sub-10ms latency</em></span>
+        <span class="c-hash">a3f9c2e</span>
+      </div>
+      <span class="c-time">2 days ago</span>
+      <div class="commits-total">
+        <svg viewBox="0 0 16 16"><path d="m1.643 3.143.643 1.536a.75.75 0 0 1-.675 1.067 1.5 1.5 0 0 0 0 3H6v1.5H1.61a3.001 3.001 0 0 1-.23-5.951L.929 2.93A.75.75 0 0 1 1.643 3.143ZM6 9.75a.75.75 0 0 1 .75.75V14h2.5v-3.5a.75.75 0 0 1 1.5 0V14h2.25a.25.25 0 0 0 .25-.25v-2.5h1v2.5A1.75 1.75 0 0 1 12.5 15.5H6.75A1.75 1.75 0 0 1 5 13.75V10.5A.75.75 0 0 1 6 9.75Z"/></svg>
+        <strong>284</strong> commits
+      </div>
+    </div>
+
+    <!-- File tree -->
+    <div class="file-tree a4" id="readme">
+      <!-- dirs -->
+      <div class="file-row">
+        <svg class="file-icon fi-dir" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/></svg>
+        <span class="file-name">src</span>
+        <span class="file-commit-msg">feat: restructure component architecture with lazy loading</span>
+        <span class="file-age">3 days ago</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon fi-dir" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/></svg>
+        <span class="file-name">backend</span>
+        <span class="file-commit-msg">fix: optimize PostgreSQL indexes — 40% query speed gain</span>
+        <span class="file-age">5 days ago</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon fi-dir" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"/></svg>
+        <span class="file-name">tests</span>
+        <span class="file-commit-msg">test: add WebSocket integration & load testing suite</span>
+        <span class="file-age">1 week ago</span>
+      </div>
+      <!-- files -->
+      <div class="file-row">
+        <svg class="file-icon fi-ts" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+        <span class="file-name">tsconfig.json</span>
+        <span class="file-commit-msg">config: strict mode + path aliases</span>
+        <span class="file-age">1 month ago</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon fi-js" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+        <span class="file-name">vite.config.ts</span>
+        <span class="file-commit-msg">build: chunk splitting + tree shaking optimization</span>
+        <span class="file-age">3 weeks ago</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon fi-php" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+        <span class="file-name">composer.json</span>
+        <span class="file-commit-msg">deps: upgrade Laravel 11.x + Filament 3.x</span>
+        <span class="file-age">2 months ago</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon fi-sh" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+        <span class="file-name">Dockerfile</span>
+        <span class="file-commit-msg">docker: multi-stage build + Nginx reverse proxy</span>
+        <span class="file-age">2 months ago</span>
+      </div>
+      <div class="file-row">
+        <svg class="file-icon fi-md" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+        <span class="file-name">README.md</span>
+        <span class="file-commit-msg">docs: update portfolio with 2025 achievements</span>
+        <span class="file-age">2 days ago</span>
+      </div>
+    </div>
+
+    <!-- README -->
+    <div class="readme-box a5">
+      <div class="readme-head">
+        <svg viewBox="0 0 16 16"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"/></svg>
+        README.md
+      </div>
+      <div class="readme-content">
+
+        <!-- Hero -->
+        <h1>
+          <span style="font-family:var(--FM);font-size:.85em;color:var(--green)">// </span>Muhammad Saad
+          <span style="font-size:.5em;vertical-align:middle;margin-left:12px"><span class="status-dot"></span></span>
+        </h1>
+
+        <div class="badge-row">
+          <span class="badge"><span class="bl">role</span><span class="bv bv-green">Full Stack Dev</span></span>
+          <span class="badge"><span class="bl">exp</span><span class="bv bv-blue">2+ years</span></span>
+          <span class="badge"><span class="bl">location</span><span class="bv bv-orange">Lahore, PK 🇵🇰</span></span>
+          <span class="badge"><span class="bl">cgpa</span><span class="bv bv-purple">3.5 / 4.0</span></span>
+          <span class="badge"><span class="bl">cisco</span><span class="bv bv-cyan">C++ 92/100</span></span>
+          <span class="badge"><span class="bl">status</span><span class="bv bv-green">Open to work ✓</span></span>
+        </div>
+
+        <p>Results-driven <strong>Full Stack Developer</strong> specializing in React.js, Node.js, Laravel and real-time systems. I architect scalable backends, craft responsive UIs, and ship production code that handles real traffic — from WebSocket trading engines to multi-tenant SaaS platforms.</p>
+
+        <!-- Terminal -->
+        <div class="terminal reveal">
+          <div class="term-bar">
+            <div class="term-dots"><div class="tdot tdot-r"></div><div class="tdot tdot-y"></div><div class="tdot tdot-g"></div></div>
+            <div class="term-title">zsh — portfolio ~ (websaad)</div>
+          </div>
+          <div class="term-body">
+            <div class="tl"><span class="tp">➜ </span><span class="tpath">~/portfolio </span><span class="tgit">git:(main) </span><span class="tcmd">git log --oneline -6</span></div>
+            <div class="tl"><span class="tout"><span class="thash">a3f9c2e</span> feat: iTrader WebSocket engine — sub-10ms latency</span></div>
+            <div class="tl"><span class="tout"><span class="thash">7b2d1f3</span> feat: 10xEvents seating chart + 50k email queue</span></div>
+            <div class="tl"><span class="tout"><span class="thash">c910e5a</span> perf: 25% load time reduction — CDN + lazy loading</span></div>
+            <div class="tl"><span class="tout"><span class="thash">88f4c12</span> feat: GreenSphere 1k concurrent user support</span></div>
+            <div class="tl"><span class="tout"><span class="thash">3e8ab01</span> chore: Docker multi-stage + Nginx reverse proxy</span></div>
+            <div class="tl"><span class="tout"><span class="thash">9fc7220</span> perf: memoization pass — 60% fewer React re-renders</span></div>
+            <br/>
+            <div class="tl"><span class="tp">➜ </span><span class="tpath">~/portfolio </span><span class="tgit">git:(main) </span><span class="tcmd">npm run build</span></div>
+            <div class="tl"><span class="tout tinfo">  vite v5.2.0 building for production...</span></div>
+            <div class="tl"><span class="tout tinfo">  transforming (247)...</span></div>
+            <div class="tl"><span class="tout tok">✓ 247 modules transformed.</span></div>
+            <div class="tl"><span class="tout tok">✓ built in 1.42s  dist/index.html (2.4 kB)</span></div>
+            <br/>
+            <div class="tl"><span class="tp">➜ </span><span class="tpath">~/portfolio </span><span class="tgit">git:(main) </span><span class="tcmd"><span class="tcursor"></span></span></div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- Stack -->
+        <h2>🛠️ Tech Stack</h2>
+        <div class="stack-wrap">
+          <span class="stack-chip sc-react">⚛ React.js</span>
+          <span class="stack-chip sc-ts">TS TypeScript</span>
+          <span class="stack-chip sc-node">⬢ Node.js</span>
+          <span class="stack-chip sc-laravel">🔺 Laravel</span>
+          <span class="stack-chip sc-vue">◆ Vue.js</span>
+          <span class="stack-chip sc-docker">🐳 Docker</span>
+          <span class="stack-chip sc-pg">🐘 PostgreSQL</span>
+          <span class="stack-chip sc-sock">⚡ Socket.IO</span>
+          <span class="stack-chip sc-prisma">◈ Prisma</span>
+          <span class="stack-chip sc-redis">⊞ Redis</span>
+          <span class="stack-chip sc-php">🐘 PHP</span>
+          <span class="stack-chip sc-tailw">◎ Tailwind</span>
+        </div>
+
+        <hr/>
+
+        <!-- Experience -->
+        <h2 id="work">💼 Work Experience</h2>
+        <div class="diff-wrap">
+
+          <div class="diff-file reveal">
+            <div class="diff-head">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--t3)"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+              <span class="diff-fname">experience/interware-pvt.ts</span>
+              <span class="diff-lbl lbl-new">current</span>
+              <span class="diff-stat"><span class="da">+128</span> <span class="dr">-0</span></span>
+            </div>
+            <div class="diff-body">
+              <div class="dl hunk"><span class="dl-n"></span><span class="dl-s">@@</span><span class="dl-c"> -0,0 +1,16 @@ Interware PVT Ltd — Full Stack Developer I | Sep 2023 – Present</span></div>
+              <div class="dl plus"><span class="dl-n">1</span><span class="dl-s">+</span><span class="dl-c"><span class="k-kw">export const</span> <span class="k-fn">interware</span>: <span class="k-type">Experience</span> = {</span></div>
+              <div class="dl plus"><span class="dl-n">2</span><span class="dl-s">+</span><span class="dl-c">  company:  <span class="k-str">"Interware PVT Ltd"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">3</span><span class="dl-s">+</span><span class="dl-c">  role:     <span class="k-str">"Full Stack Developer I"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">4</span><span class="dl-s">+</span><span class="dl-c">  period:   <span class="k-str">"Sep 2023 → Present"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">5</span><span class="dl-s">+</span><span class="dl-c">  <span class="k-cmt">// Key achievements</span></span></div>
+              <div class="dl plus"><span class="dl-n">6</span><span class="dl-s">+</span><span class="dl-c">  achievements: [</span></div>
+              <div class="dl plus"><span class="dl-n">7</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"Led React.js + Redux Toolkit trading exchange platform"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">8</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"Socket.IO WebSockets — low-latency bi-directional streams"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">9</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"useMemo + useCallback → 60% reduction in re-renders"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">10</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"Prisma ORM + PostgreSQL with optimized query plans"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">11</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"Firebase FCM push notifications pipeline"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">12</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"Laravel REST API + Sanctum authentication"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">13</span><span class="dl-s">+</span><span class="dl-c">  ],</span></div>
+              <div class="dl plus"><span class="dl-n">14</span><span class="dl-s">+</span><span class="dl-c">  stack: [<span class="k-str">"React"</span>, <span class="k-str">"Node.js"</span>, <span class="k-str">"Socket.IO"</span>, <span class="k-str">"Prisma"</span>, <span class="k-str">"PostgreSQL"</span>, <span class="k-str">"Laravel"</span>, <span class="k-str">"FCM"</span>],</span></div>
+              <div class="dl plus"><span class="dl-n">15</span><span class="dl-s">+</span><span class="dl-c">};</span></div>
+            </div>
+          </div>
+
+          <div class="diff-file reveal">
+            <div class="diff-head">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--t3)"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+              <span class="diff-fname">experience/boson-studio.ts</span>
+              <span class="diff-lbl lbl-mod">previous</span>
+              <span class="diff-stat"><span class="da">+84</span> <span class="dr">-0</span></span>
+            </div>
+            <div class="diff-body">
+              <div class="dl hunk"><span class="dl-n"></span><span class="dl-s">@@</span><span class="dl-c"> -0,0 +1,12 @@ Boson Studio — Full Stack Developer | Jul – Aug 2023</span></div>
+              <div class="dl plus"><span class="dl-n">1</span><span class="dl-s">+</span><span class="dl-c"><span class="k-kw">export const</span> <span class="k-fn">bosonStudio</span>: <span class="k-type">Experience</span> = {</span></div>
+              <div class="dl plus"><span class="dl-n">2</span><span class="dl-s">+</span><span class="dl-c">  company: <span class="k-str">"Boson Studio"</span>,  role: <span class="k-str">"Full Stack Developer"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">3</span><span class="dl-s">+</span><span class="dl-c">  period:  <span class="k-str">"Jul 2023 → Aug 2023"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">4</span><span class="dl-s">+</span><span class="dl-c">  achievements: [</span></div>
+              <div class="dl plus"><span class="dl-n">5</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"Backend with Laravel + Node.js + Sequelize ORM + MySQL"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">6</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"Docker containerization + CI/CD pipeline"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">7</span><span class="dl-s">+</span><span class="dl-c">    <span class="k-str">"25% page load reduction — CDN + lazy loading + gzip"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">8</span><span class="dl-s">+</span><span class="dl-c">  ],</span></div>
+              <div class="dl plus"><span class="dl-n">9</span><span class="dl-s">+</span><span class="dl-c">};</span></div>
+            </div>
+          </div>
+
+          <div class="diff-file reveal">
+            <div class="diff-head">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--t3)"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Z"/></svg>
+              <span class="diff-fname">experience/boson-intern.ts</span>
+              <span class="diff-lbl lbl-mod">internship</span>
+              <span class="diff-stat"><span class="da">+60</span> <span class="dr">-0</span></span>
+            </div>
+            <div class="diff-body">
+              <div class="dl hunk"><span class="dl-n"></span><span class="dl-s">@@</span><span class="dl-c"> -0,0 +1,10 @@ Boson Studio — Intern Developer | Apr 2022 – Jul 2022</span></div>
+              <div class="dl plus"><span class="dl-n">1</span><span class="dl-s">+</span><span class="dl-c"><span class="k-kw">export const</span> <span class="k-fn">bosonIntern</span>: <span class="k-type">Experience</span> = {</span></div>
+              <div class="dl plus"><span class="dl-n">2</span><span class="dl-s">+</span><span class="dl-c">  stack:   [<span class="k-str">"Vue.js"</span>, <span class="k-str">"React.js"</span>, <span class="k-str">"REST APIs"</span>],</span></div>
+              <div class="dl plus"><span class="dl-n">3</span><span class="dl-s">+</span><span class="dl-c">  learned: [<span class="k-str">"HOC patterns"</span>, <span class="k-str">"Custom Hooks"</span>, <span class="k-str">"ShadCN UI"</span>],</span></div>
+              <div class="dl plus"><span class="dl-n">4</span><span class="dl-s">+</span><span class="dl-c">  outcome: <span class="k-str">"Built reusable UI library used across 3 products"</span>,</span></div>
+              <div class="dl plus"><span class="dl-n">5</span><span class="dl-s">+</span><span class="dl-c">};</span></div>
+            </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- Projects -->
+        <h2 id="projects">📦 Pinned Repositories</h2>
+        <div class="project-grid">
+          <div class="proj-card reveal">
+            <div class="pcard-top">
+              <div class="pcard-icon"><svg viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/></svg></div>
+              <span class="pcard-name">iTrader</span>
+              <span class="pcard-vis">Public</span>
+            </div>
+            <p class="pcard-desc">High-frequency trading exchange. Sub-10ms WebSocket latency, Redux Toolkit memoization cutting re-renders by 60%. Real-time order book + candlestick charts.</p>
+            <div class="pcard-bottom">
+              <span class="pcard-lang"><span class="lang-dot" style="background:#3b82f6"></span>TypeScript</span>
+              <span class="pcard-stars"><svg viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>24</span>
+              <span class="pcard-date">Updated 2d ago</span>
+            </div>
+          </div>
+
+          <div class="proj-card reveal">
+            <div class="pcard-top">
+              <div class="pcard-icon"><svg viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/></svg></div>
+              <span class="pcard-name">10xEvents</span>
+              <span class="pcard-vis">Public</span>
+            </div>
+            <p class="pcard-desc">Full-stack event ticketing SaaS. Multi-role dashboards, interactive seating charts via Seats.io, bulk email queues for 50k+ recipients, Quasar mobile-first UI.</p>
+            <div class="pcard-bottom">
+              <span class="pcard-lang"><span class="lang-dot" style="background:#ff4638"></span>PHP</span>
+              <span class="pcard-stars"><svg viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>18</span>
+              <span class="pcard-date">Updated 5d ago</span>
+            </div>
+          </div>
+
+          <div class="proj-card reveal">
+            <div class="pcard-top">
+              <div class="pcard-icon"><svg viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/></svg></div>
+              <span class="pcard-name">GreenSphere</span>
+              <span class="pcard-vis">Public</span>
+            </div>
+            <p class="pcard-desc">Plant marketplace with real-time order tracking, SMS/email push delivery pipeline, seller inventory management. Handles 1,000 concurrent users on Laravel + Filament.</p>
+            <div class="pcard-bottom">
+              <span class="pcard-lang"><span class="lang-dot" style="background:#42b883"></span>Vue</span>
+              <span class="pcard-stars"><svg viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>11</span>
+              <span class="pcard-date">Updated 2w ago</span>
+            </div>
+          </div>
+
+          <div class="proj-card reveal">
+            <div class="pcard-top">
+              <div class="pcard-icon"><svg viewBox="0 0 16 16"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8Z"/></svg></div>
+              <span class="pcard-name">websaad</span>
+              <span class="pcard-vis">Public</span>
+            </div>
+            <p class="pcard-desc">✨ Special repo — this README is my live GitHub profile. Auto-updating stats via GitHub Actions. Dynamic contribution graphs + latest commit feed.</p>
+            <div class="pcard-bottom">
+              <span class="pcard-lang"><span class="lang-dot" style="background:#e34c26"></span>HTML</span>
+              <span class="pcard-stars"><svg viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"/></svg>47</span>
+              <span class="pcard-date">Updated today</span>
+            </div>
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- Contribution Heatmap -->
+        <h2 id="heatmap">📊 Contribution Activity</h2>
+        <div class="heatmap-box reveal">
+          <div class="heatmap-header">
+            <span class="heatmap-title" id="contrib-count">284 contributions in the last year</span>
+            <span class="heatmap-sub">Contribution activity</span>
+          </div>
+          <div class="heatmap-scroll">
+            <div class="heatmap-grid">
+              <div class="heatmap-months" id="heatmap-months"></div>
+              <div class="heatmap-days" id="heatmap-days"></div>
+            </div>
+          </div>
+          <div class="heatmap-legend">
+            Less
+            <div class="hm-cell sm h0"></div>
+            <div class="hm-cell sm h1"></div>
+            <div class="hm-cell sm h2"></div>
+            <div class="hm-cell sm h3"></div>
+            <div class="hm-cell sm h4"></div>
+            More
+          </div>
+        </div>
+
+        <hr/>
+
+        <!-- Skills -->
+        <h2>⚡ Skills &amp; Proficiency</h2>
+        <div class="skill-grid" id="skill-grid"></div>
+
+        <hr/>
+
+        <!-- Contact -->
+        <h2 id="contact">📫 How to Reach Me</h2>
+        <pre><code><span class="k-kw">const</span> <span class="k-fn">contact</span> = {
+  email:    <span class="k-str">"saad.boson01@gmail.com"</span>,
+  phone:    <span class="k-str">"0317-5587323"</span>,
+  github:   <span class="k-str">"github.com/websaad"</span>,
+  linkedin: <span class="k-str">"linkedin.com/in/muhammad-saad-0b123b240"</span>,
+  location: <span class="k-str">"Lahore, Punjab, Pakistan 🇵🇰"</span>,
+  status:   <span class="k-str">"open to full-time &amp; freelance opportunities"</span>,
+  response: <span class="k-str">"within 24 hours"</span>,
+};</code></pre>
+        <div class="contact-grid">
+          <a href="mailto:saad.boson01@gmail.com" class="contact-card reveal" style="text-decoration:none">
+            <div class="contact-type">📧 Email</div>
+            <div class="contact-val">saad.boson01@gmail.com</div>
+            <div class="contact-sub">Fastest response</div>
+          </a>
+          <a href="https://github.com/websaad" target="_blank" class="contact-card reveal" style="text-decoration:none">
+            <div class="contact-type">🐙 GitHub</div>
+            <div class="contact-val">github.com/websaad</div>
+            <div class="contact-sub">Code & projects</div>
+          </a>
+          <a href="https://linkedin.com/in/muhammad-saad-0b123b240" target="_blank" class="contact-card reveal" style="text-decoration:none">
+            <div class="contact-type">💼 LinkedIn</div>
+            <div class="contact-val">muhammad-saad-0b123b240</div>
+            <div class="contact-sub">Professional profile</div>
+          </a>
+          <a href="tel:+923175587323" class="contact-card reveal" style="text-decoration:none">
+            <div class="contact-type">📱 Phone</div>
+            <div class="contact-val">0317-5587323</div>
+            <div class="contact-sub">Lahore, PKT</div>
+          </a>
+        </div>
+
+      </div><!-- /readme-content -->
+    </div><!-- /readme-box -->
+  </main>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="repo-sidebar">
+
+    <!-- About -->
+    <div class="sidebar-card a3">
+      <div class="sidebar-title">About</div>
+      <p class="about-desc">Full Stack Developer crafting real-time platforms, trading systems, and scalable architectures. 2+ years shipping production code.</p>
+      <div class="meta-rows">
+        <div class="meta-row">
+          <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.75.75 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z"/></svg>
+          <span>Sep 2023 – Present @ Interware</span>
+        </div>
+        <div class="meta-row">
+          <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <a href="https://github.com/websaad">github.com/websaad</a>
+        </div>
+        <div class="meta-row">
+          <svg viewBox="0 0 16 16"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z"/></svg>
+          <a href="mailto:saad.boson01@gmail.com">saad.boson01@gmail.com</a>
+        </div>
+        <div class="meta-row">
+          <svg viewBox="0 0 16 16"><path d="m12.596 11.596-3.535 3.536a1.5 1.5 0 0 1-2.122 0l-3.535-3.536a6.5 6.5 0 1 1 9.192-9.193 6.5 6.5 0 0 1 0 9.193Zm-1.06-8.132v-.001a5 5 0 1 0-7.072 7.072L8 14.07l3.536-3.534a5 5 0 0 0 0-7.072ZM8 9a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 9Z"/></svg>
+          <span>Lahore, Pakistan</span>
+        </div>
+      </div>
+      <div class="topics">
+        <span class="topic">react</span>
+        <span class="topic">nodejs</span>
+        <span class="topic">laravel</span>
+        <span class="topic">typescript</span>
+        <span class="topic">websockets</span>
+        <span class="topic">postgresql</span>
+        <span class="topic">docker</span>
+        <span class="topic">full-stack</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sidebar-card a4">
+      <div class="sidebar-title">Repository Stats</div>
+      <div class="stat-row">
+        <div class="stat-item"><div class="stat-num">47</div><div class="stat-lbl">Stars</div></div>
+        <div class="stat-item"><div class="stat-num">12</div><div class="stat-lbl">Forks</div></div>
+        <div class="stat-item"><div class="stat-num">284</div><div class="stat-lbl">Commits</div></div>
+        <div class="stat-item"><div class="stat-num">2+</div><div class="stat-lbl">Yrs exp</div></div>
+      </div>
+    </div>
+
+    <!-- Languages -->
+    <div class="sidebar-card a5">
+      <div class="sidebar-title">Languages</div>
+      <div class="lang-bar" id="lang-bar"></div>
+      <div class="lang-list" id="lang-list"></div>
+    </div>
+
+    <!-- Activity -->
+    <div class="sidebar-card reveal">
+      <div class="sidebar-title">Recent Activity</div>
+      <div class="activity-list" id="activity-list"></div>
+    </div>
+
+    <!-- Education -->
+    <div class="sidebar-card reveal">
+      <div class="sidebar-title">Education</div>
+      <div class="edu-item">
+        <div class="edu-title">ADP Computer Science</div>
+        <div class="edu-org">Virtual University of Pakistan</div>
+        <div class="edu-foot">
+          <span class="edu-year">2023 – 2025</span>
+          <span class="edu-badge">CGPA 3.5 / 4.0</span>
+        </div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-title">C++ Programming</div>
+        <div class="edu-org">Cisco Networking Academy</div>
+        <div class="edu-foot">
+          <span class="edu-year">2023</span>
+          <span class="edu-badge">92 / 100</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live clock -->
+    <div class="sidebar-card reveal">
+      <div class="sidebar-title">Local Time</div>
+      <div id="clock" style="font-family:var(--FM);font-size:24px;font-weight:700;color:var(--green);letter-spacing:-.03em;margin-bottom:4px"></div>
+      <div style="font-size:11px;color:var(--t3);font-family:var(--FM)">Pakistan Standard Time (PKT, UTC+5)</div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- FOOTER -->
+<footer class="gh-footer">
+  <div>© 2025 Muhammad Saad &nbsp;·&nbsp; <a href="mailto:saad.boson01@gmail.com" style="color:var(--t3)">saad.boson01@gmail.com</a></div>
+  <div class="footer-links">
+    <a href="#">Terms</a>
+    <a href="#">Privacy</a>
+    <a href="https://github.com/websaad">GitHub</a>
+    <a href="https://linkedin.com/in/muhammad-saad-0b123b240">LinkedIn</a>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════ -->
+<script>
+/* ─── Custom Cursor ──────────────────────── */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx=window.innerWidth/2, my=window.innerHeight/2;
+let rx=mx, ry=my;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function loop(){
+  rx += (mx-rx)*.13; ry += (my-ry)*.13;
+  dot.style.left  = mx+'px'; dot.style.top  = my+'px';
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.proj-card,.contact-card,.stack-chip').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+
+/* ─── Contribution Heatmap ───────────────── */
+(function(){
+  const days = document.getElementById('heatmap-days');
+  const WEEKS = 52;
+  const now = new Date();
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Generate realistic commit data (more active recently)
+  let total = 0;
+  for(let w = 0; w < WEEKS; w++){
+    const col = document.createElement('div');
+    col.className = 'heatmap-week';
+    for(let d = 0; d < 7; d++){
+      const cell = document.createElement('div');
+      const recency = w / WEEKS; // 0=oldest, 1=newest
+      // Weight towards higher levels as more recent
+      const rand = Math.random();
+      let lv;
+      if(recency > 0.85) {
+        lv = rand < 0.15 ? 0 : rand < 0.35 ? 1 : rand < 0.55 ? 2 : rand < 0.75 ? 3 : 4;
+      } else if(recency > 0.5) {
+        lv = rand < 0.30 ? 0 : rand < 0.55 ? 1 : rand < 0.75 ? 2 : rand < 0.90 ? 3 : 4;
+      } else {
+        lv = rand < 0.50 ? 0 : rand < 0.70 ? 1 : rand < 0.85 ? 2 : rand < 0.94 ? 3 : 4;
+      }
+      // Weekends slightly less active
+      if((d===0||d===6) && Math.random() < 0.4) lv = Math.max(0, lv-1);
+      cell.className = 'hm-cell h' + lv;
+      const contribs = [0,1,3,6,9][lv];
+      cell.title = `${contribs} contribution${contribs!==1?'s':''}`;
+      total += contribs;
+      col.appendChild(cell);
+    }
+    days.appendChild(col);
+  }
+  // Update count
+  document.getElementById('contrib-count').textContent =
+    total + ' contributions in the last year';
+})();
+
+/* ─── Language Bar ───────────────────────── */
+(function(){
+  const LANGS = [
+    {name:'TypeScript', pct:42, color:'#3b82f6'},
+    {name:'JavaScript', pct:26, color:'#daaa3f'},
+    {name:'PHP',        pct:20, color:'#b083f0'},
+    {name:'Vue',        pct:7,  color:'#42b883'},
+    {name:'Other',      pct:5,  color:'#545d68'},
+  ];
+  const bar  = document.getElementById('lang-bar');
+  const list = document.getElementById('lang-list');
+  LANGS.forEach(l => {
+    const seg = document.createElement('div');
+    seg.className = 'lang-seg';
+    seg.style.flex = l.pct;
+    seg.style.background = l.color;
+    seg.title = l.name + ' ' + l.pct + '%';
+    bar.appendChild(seg);
+    const row = document.createElement('div');
+    row.className = 'lang-row';
+    row.innerHTML = `<div class="ld" style="background:${l.color}"></div><span class="lang-name">${l.name}</span><span class="lang-pct">${l.pct}%</span>`;
+    list.appendChild(row);
+  });
+})();
+
+/* ─── Activity List ──────────────────────── */
+(function(){
+  const ACTS = [
+    {c:'#57ab5a', html:'Pushed <strong>3 commits</strong> to <strong>iTrader</strong>',    t:'2h ago'},
+    {c:'#539bf5', html:'Opened PR <strong>#12</strong>: feat/ws-reconnect-logic',           t:'1d ago'},
+    {c:'#b083f0', html:'Merged PR <strong>#11</strong>: perf/memoization-sweep',            t:'2d ago'},
+    {c:'#daaa3f', html:'Released <strong>v2.3.0</strong> — GreenSphere IoT pipeline',       t:'5d ago'},
+    {c:'#e0823d', html:'Starred <strong>prisma/prisma</strong>',                            t:'1w ago'},
+    {c:'#57ab5a', html:'Pushed <strong>7 commits</strong> to <strong>10xEvents</strong>',   t:'1w ago'},
+  ];
+  const feed = document.getElementById('activity-list');
+  ACTS.forEach(a => {
+    const el = document.createElement('div');
+    el.className = 'act-item';
+    el.innerHTML = `<div class="act-dot" style="background:${a.c}"></div><div class="act-body">${a.html}</div><div class="act-time">${a.t}</div>`;
+    feed.appendChild(el);
+  });
+})();
+
+/* ─── Skill Cards ────────────────────────── */
+(function(){
+  const grid = document.getElementById('skill-grid');
+  const GROUPS = [
+    { file:'frontend.tsx', dot:'#ff5f57', skills:[
+        {n:'React.js',  p:95, c:'#61dafb'},
+        {n:'TypeScript',p:82, c:'#3b82f6'},
+        {n:'Vue.js',    p:88, c:'#42b883'},
+        {n:'Tailwind',  p:92, c:'#06b6d4'},
+    ]},
+    { file:'backend.ts', dot:'#28c840', skills:[
+        {n:'Node.js',   p:92, c:'#68a063'},
+        {n:'Laravel',   p:88, c:'#ff4638'},
+        {n:'Express',   p:90, c:'#57ab5a'},
+        {n:'Socket.IO', p:85, c:'#25c2a0'},
+    ]},
+    { file:'database.sql', dot:'#febc2e', skills:[
+        {n:'PostgreSQL',p:85, c:'#336791'},
+        {n:'MySQL',     p:88, c:'#e0823d'},
+        {n:'MongoDB',   p:78, c:'#57ab5a'},
+        {n:'Prisma',    p:87, c:'#5a67d8'},
+    ]},
+    { file:'devops.sh', dot:'#539bf5', skills:[
+        {n:'Docker',    p:75, c:'#2496ed'},
+        {n:'Nginx',     p:70, c:'#57ab5a'},
+        {n:'Git',       p:95, c:'#e0823d'},
+        {n:'Vite',      p:88, c:'#b083f0'},
+    ]},
+  ];
+  GROUPS.forEach(g => {
+    const card = document.createElement('div');
+    card.className = 'skill-card reveal';
+    card.innerHTML = `
+      <div class="sc-header">
+        <div class="sc-macs">
+          <div class="sc-mac" style="background:#ff5f57"></div>
+          <div class="sc-mac" style="background:#febc2e"></div>
+          <div class="sc-mac" style="background:${g.dot}"></div>
+        </div>
+        <span class="sc-filename">${g.file}</span>
+      </div>
+      <div class="sc-body">
+        <span style="color:#ff7b72">const</span> skills = {
+        <div class="sc-bars">
+          ${g.skills.map(s=>`
+          <div class="sc-bar-row">
+            <span class="sc-label">${s.n}</span>
+            <div class="sc-track"><div class="sc-fill" data-pct="${s.p}" style="background:${s.c}"></div></div>
+            <span class="sc-pct">${s.p}%</span>
+          </div>`).join('')}
+        </div>
+        }
+      </div>`;
+    grid.appendChild(card);
+  });
+})();
+
+/* ─── Scroll Reveal ──────────────────────── */
+(function(){
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(!e.isIntersecting) return;
+      e.target.classList.add('in');
+      // trigger skill bars
+      e.target.querySelectorAll('.sc-fill').forEach(b => {
+        b.style.width = b.dataset.pct + '%';
+      });
+      io.unobserve(e.target);
+    });
+  }, {threshold: 0.1});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+})();
+
+/* ─── Live Clock ─────────────────────────── */
+(function tick(){
+  const el = document.getElementById('clock');
+  if(el){
+    const t = new Date().toLocaleTimeString('en-US',{
+      timeZone:'Asia/Karachi', hour12:false,
+      hour:'2-digit', minute:'2-digit', second:'2-digit'
+    });
+    el.textContent = t;
+  }
+  setTimeout(tick, 1000);
+})();
+</script>
 </body>
 </html>
